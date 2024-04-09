@@ -3,6 +3,11 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import NumericProperty, StringProperty
 from kivy.clock import Clock
 from datetime import datetime
+from kivy.config import Config
+
+Config.set('graphics', 'width', '800')
+Config.set('graphics', 'height', '480')
+Config.set('graphics', 'resizable', False)
 
 class CarDashboard(FloatLayout):
     accelerator_pedal = NumericProperty(0)
@@ -18,9 +23,9 @@ class CarDashboard(FloatLayout):
         self.current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
-class CarDash(App):
+class DesignApp(App):
     def build(self):
         return CarDashboard()
 
 if __name__ == '__main__':
-    CarDash().run()
+    DesignApp().run()
