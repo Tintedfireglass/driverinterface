@@ -1,0 +1,37 @@
+<CarDashboard>:
+    Label:
+        text: 'Car Dashboard'
+        font_size: 24
+        size_hint: None, None
+        size: self.texture_size
+        pos_hint: {'center_x': 0.5, 'top': 1}
+    Label:
+        text: 'Accelerator Pedal: ' + str(root.accelerator_pedal) + '%'
+        font_size: 20
+        size_hint: None, None
+        size: self.texture_size
+        pos_hint: {'x': 0.05, 'top': 0.9}
+    Label:
+        text: 'State of Charge (SOC): ' + str(root.soc) + '%'
+        font_size: 20
+        size_hint: None, None
+        size: self.texture_size
+        pos_hint: {'right': 0.95, 'top': 0.9}
+    Label:
+        text: 'Cell Temperature: ' + str(root.cell_temperature) + '°C'
+        font_size: 20
+        size_hint: None, None
+        size: self.texture_size
+        pos_hint: {'x': 0.05, 'top': 0.8}
+    Label:
+        text: 'Time: ' + root.current_time
+        font_size: 20
+        size_hint: None, None
+        size: self.texture_size
+        pos_hint: {'x': 0.05, 'bottom': 0.1}
+    Label:
+        text: 'OJAS'
+        font_size: 20
+        size_hint: None, None
+        size: self.texture_size
+        pos_hint: {'right': 0.95, 'bottom': 0.1}
