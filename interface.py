@@ -26,15 +26,15 @@ class CarDashboard(FloatLayout):
             if lines:
                 latest_line = lines[-1]  
                 
-                spi_data_int = re.findall(r'\b\d+\b', latest_line)
+                spi_data_int = re.findall(r'\[(\d+(?:,\s*\d+)*)\]', latest_line)
                 if spi_data_int:
                     spi_data_int = list(map(int, spi_data_int))  
                 global accelerator_pedal
                 global soc
                 global cell_temperature
-                accelerator_pedal = spi_data_int[0]
-                soc = spi_data_int[1]
-                cell_temperature = spi_data_int[2]
+                accelerator_pedal = NumericProperty(spi_data_int[0])
+                soc = NumericProperty(spi_data_int[1])
+                cell_temperature = NumericProperty(spi_data_int[2])
                         
             time.sleep(1) 
 
