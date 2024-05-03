@@ -8,8 +8,8 @@ from kivy.config import Config
 import time 
 import re
 
-Config.set('graphics', 'width', '800')
-Config.set('graphics', 'height', '480')
+Config.set('graphics', 'width', '400')
+Config.set('graphics', 'height', '240')
 Config.set('graphics', 'resizable', False)
 
 
