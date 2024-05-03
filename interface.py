@@ -20,23 +20,23 @@ class CarDashboard(FloatLayout):
     cell_temperature = NumericProperty(25)
     current_time = StringProperty("")
 
-    def read_spi():
-        with open("spi_log.txt", "r") as log_file:
-            lines = log_file.readlines()
-            if lines:
-                latest_line = lines[-1]  
+    # def read_spi():
+    #     with open("spi_log.txt", "r") as log_file:
+    #         lines = log_file.readlines()
+    #         if lines:
+    #             latest_line = lines[-1]  
                 
-                spi_data_int = re.findall(r'\[(\d+(?:,\s*\d+)*)\]', latest_line)
-                if spi_data_int:
-                    spi_data_int = list(map(int, spi_data_int))  
-                global accelerator_pedal
-                global soc
-                global cell_temperature
-                accelerator_pedal = NumericProperty(spi_data_int[0])
-                soc = NumericProperty(spi_data_int[1])
-                cell_temperature = NumericProperty(spi_data_int[2])
+    #             spi_data_int = re.findall(r'\[(\d+(?:,\s*\d+)*)\]', latest_line)
+    #             if spi_data_int:
+    #                 spi_data_int = list(map(int, spi_data_int))  
+    #             global accelerator_pedal
+    #             global soc
+    #             global cell_temperature
+    #             accelerator_pedal = NumericProperty(spi_data_int[0])
+    #             soc = NumericProperty(spi_data_int[1])
+    #             cell_temperature = NumericProperty(spi_data_int[2])
                         
-            time.sleep(1) 
+    #         time.sleep(1) 
 
 
     def __init__(self, **kwargs):
@@ -45,7 +45,7 @@ class CarDashboard(FloatLayout):
 
     def update_time(self, dt):
         self.current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.read_spi()
+        #self.read_spi()
 
 
 
