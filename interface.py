@@ -40,7 +40,7 @@ class CarDashboard(FloatLayout):
     def __init__(self, **kwargs):
         super(CarDashboard, self).__init__(**kwargs)
 
-        self.speedometer = Speedometer(font_size=80, size_hint=(None, None), size=(500, 500), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        self.speedometer = Speedometer(font_size=80, size_hint=(None, None), size=(400, 400), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         self.add_widget(self.speedometer)
 
         # State of Charge Label (top-left)
@@ -80,7 +80,7 @@ class CarDashboard(FloatLayout):
 
 class CarDashboardApp(App):
     def build(self):
-        Window.fullscreen = True
+        Window.size(800,480)
         return CarDashboard()
 
 
