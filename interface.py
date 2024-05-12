@@ -6,6 +6,7 @@ from kivy.clock import Clock
 from kivy.graphics import Color, Line, Rectangle
 from math import cos, sin, pi
 from kivy.core.window import Window
+from comm import uart_read
 
 
 class Speedometer(Label):
@@ -62,6 +63,8 @@ class CarDashboard(FloatLayout):
         Clock.schedule_interval(self.update_speedometer, 0.1)
 
     def update_speedometer(self, dt):
+        
+        spd = uart_read()
         if(self.speedometer.value<100):
             self.speedometer.movement -= 1
             self.speedometer.value+=1
