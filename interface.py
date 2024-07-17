@@ -64,7 +64,7 @@ class CarDashboard(FloatLayout):
 
     def update_speedometer(self, dt):
         
-        spd = uart_read()
+        #spd = uart_read()
         if(self.speedometer.value<100):
             self.speedometer.movement -= 1
             self.speedometer.value+=1
