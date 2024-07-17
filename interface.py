@@ -6,7 +6,7 @@ from kivy.clock import Clock
 from kivy.graphics import Color, Line, Rectangle
 from math import cos, sin, pi
 from kivy.core.window import Window
-from comm import uart_read
+#from comm import uart_read
 
 
 class Speedometer(Label):
@@ -73,7 +73,6 @@ class CarDashboard(FloatLayout):
             self.speedometer.value=0
         self.speedometer.draw_speedometer()
 
-        # Change background color based on speedometer value
         color_value = max(min((1 - self.speedometer.value / 100) * 2, 1), 0)
         self.canvas.before.clear()
         with self.canvas.before:
