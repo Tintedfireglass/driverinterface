@@ -82,7 +82,7 @@ class CarDashboard(FloatLayout):
 
 class CarDashboardApp(App):
     def build(self):
-        Window.size(800,480)
+        Window.fullscreen = True
         return CarDashboard()
 
 
