@@ -6,6 +6,7 @@ from kivy.clock import Clock
 from kivy.graphics import Color, Line, Rectangle
 from math import cos, sin, pi
 from kivy.core.window import Window
+from kivy.config import Config
 #from comm import uart_read
 
 
