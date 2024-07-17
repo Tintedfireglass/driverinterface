@@ -82,7 +82,7 @@ class CarDashboard(FloatLayout):
 
 class CarDashboardApp(App):
     def build(self):
-        Window.size(800,480)
+        Config.set('graphics','width','800')
         return CarDashboard()
 
 
