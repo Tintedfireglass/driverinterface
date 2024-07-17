@@ -83,9 +83,8 @@ class CarDashboard(FloatLayout):
 
 class CarDashboardApp(App):
     def build(self):
-        Config.set('graphics','width','800')
-        Config.set('graphics','height','480')
-        Window.fullscreen = True
+        Config.set('graphics','width','200')
+        Config.set('graphics','height','200')
         return CarDashboard()
 
 
