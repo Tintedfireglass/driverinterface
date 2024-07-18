@@ -1,8 +1,11 @@
 from serial import Serial
 import time
-while True:
-    with Serial('/dev/ttyAMA0', 115200) as serial:
+import re
+
+def UARTRead():
+    with Serial('/dev/ttyACM0', 115200) as serial:
         dataa = serial.readline()
         print(dataa)
-        time.sleep(1)
-
+        pattern = r'(\d+)\s+(\d+)'
+        match = re.search(pattern, dataa)
+        return match
