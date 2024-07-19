@@ -30,7 +30,7 @@ class Speedometer(Label):
                  width=2)
 
             # soc label
-            Label(text='SOC: ' + str(self.soc) + '%', pos=(self.center_x - 350, self.center_y + 200), valign='top', font_size=20)
+            Label(text='SOC: ' + str(self.soc) + '%', pos=(self.center_x - 35, self.center_y + 20), valign='top', font_size=20)
 
             # Add text indicating movement
             Label(text=str(int(self.value)), pos=(self.center_x - 10, self.center_y - 30), font_size=20)
