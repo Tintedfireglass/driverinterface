@@ -6,8 +6,7 @@ from kivy.clock import Clock
 from kivy.graphics import Color, Line, Rectangle
 from math import cos, sin, pi
 from kivy.core.window import Window
-from kivy.config import Config
-from serial import Serial
+import serial
 import threading
 
 class Speedometer(Label):
@@ -63,37 +62,46 @@ class CarDashboard(FloatLayout):
         ojas_label = Label(text="OJAS", font_size=20, size_hint=(None, None), size=(self.width / 2, 50), pos_hint={"right": 0.95, "bottom": 0.05}, halign='right', valign='middle')
         self.add_widget(ojas_label)
 
-        Clock.schedule_interval(self.update_speedometer, 0.1)
+        self.serial_port = None
         self.start_UART_thread()
+        Clock.schedule_interval(self.update_speedometer, 0.1)
 
     def UARTRead(self):
-        while True:
-            with Serial('/dev/ttyACM0', 115200) as serial:
-                dataa = serial.readline()
-                print(dataa)
-                match = dataa.split()
-                self.arrr = match
+        try:
+            with serial.Serial('/dev/ttyACM0', 115200, timeout=1) as self.serial_port:
+                while True:
+                    dataa = self.serial_port.readline().decode('utf-8').strip()
+                    if dataa:
+                        match = dataa.split()
+                        if len(match) >= 2:
+                            # Update data on main thread
+                            self.update_data(match[0], match[1])
+        except serial.SerialException as e:
+            print(f"Serial Exception: {e}")
+
+    def update_data(self, soc, value):
+        # Schedule UI update on the main thread
+        Clock.schedule_once(lambda dt: self.update_speedometer_data(soc, value))
+
+    def update_speedometer_data(self, soc, value):
+        self.speedometer.soc = int(soc)
+        self.speedometer.value = int(value)
+        if self.speedometer.value < 100:
+            self.speedometer.movement -= 1
+        else:
+            self.speedometer.movement = -180
+        self.speedometer.draw_speedometer()
+
+        color_value = max(min((1 - self.speedometer.value / 100) * 2, 1), 0)
+        self.canvas.before.clear()
+        with self.canvas.before:
+            Color(0.5 + 0.5 * (1 - color_value), 0.5 * color_value, 0)
+            Rectangle(pos=self.pos, size=self.size)
 
     def start_UART_thread(self):
         uart_thread = threading.Thread(target=self.UARTRead)
         uart_thread.daemon = True
         uart_thread.start()
-
-    def update_speedometer(self, dt):
-        if hasattr(self, 'arrr') and self.arrr:
-            self.speedometer.soc = self.arrr[0]
-            self.speedometer.value = int(self.arrr[1])
-            if self.speedometer.value < 100:
-                self.speedometer.movement -= 1
-            else:
-                self.speedometer.movement = -180
-            self.speedometer.draw_speedometer()
-
-            color_value = max(min((1 - self.speedometer.value / 100) * 2, 1), 0)
-            self.canvas.before.clear()
-            with self.canvas.before:
-                Color(0.5 + 0.5 * (1 - color_value), 0.5 * color_value, 0)
-                Rectangle(pos=self.pos, size=self.size)
 
 class CarDashboardApp(App):
     def build(self):
