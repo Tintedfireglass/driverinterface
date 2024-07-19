@@ -8,7 +8,7 @@ from math import cos, sin, pi
 from kivy.core.window import Window
 from kivy.config import Config
 from serial import Serial
-import re
+import threading
 
 #from comm import uart_read
 
@@ -48,6 +48,7 @@ class CarDashboard(FloatLayout):
     accelerator_pedal = NumericProperty(0)
     cell_temperature = NumericProperty(0)
     current_time = StringProperty("00:00")
+    uart_thread.start()
 
     def __init__(self, **kwargs):
         super(CarDashboard, self).__init__(**kwargs)
@@ -73,33 +74,35 @@ class CarDashboard(FloatLayout):
 
         Clock.schedule_interval(self.update_speedometer, 0.1)
 
+    
     def UARTRead(self):
-        with Serial('/dev/ttyACM0', 115200) as serial:
-            dataa = serial.readline()
-            print(dataa)
-            pattern = r'(\d+)\s+(\d+)'
-            match = re.search(pattern, dataa)
-            return match
+        while True:
+            with Serial('/dev/ttyACM0', 115200) as serial:
+                dataa = serial.readline()
+                print(dataa)
+                match = dataa.split()
+                self.arrr = match
 
+    def start_UART_thread(self):
+        uart_thread = threading.Thread(target=self.UARTRead)
+        uart_thread.daemon = True
+        uart_thread.start()
 
     def update_speedometer(self, dt):
+        if hasattr(self, 'arrr') and self.arrr:
+            self.speedometer.soc = self.arrr[0]
+            self.speedometer.value = int(self.arrr[1])
+            if self.speedometer.value < 100:
+                self.speedometer.movement -= 1
+            else:
+                self.speedometer.movement = -180
+            self.speedometer.draw_speedometer()
 
-        self.arrr = UARTRead()
-        self.speedometer.soc = self.arrr[0]
-        self.speedometer.value = self.arrr[1]
-        if(self.speedometer.value<100):
-            self.speedometer.movement -= 1
-        #   self.speedometer.value+=1
-        else:
-            self.speedometer.movement=-180
-            # self.speedometer.value=0
-        self.speedometer.draw_speedometer()
-
-        color_value = max(min((1 - self.speedometer.value / 100) * 2, 1), 0)
-        self.canvas.before.clear()
-        with self.canvas.before:
-            Color(0.5 + 0.5 * (1 - color_value), 0.5 * color_value, 0)
-            Rectangle(pos=self.pos, size=self.size)
+            color_value = max(min((1 - self.speedometer.value / 100) * 2, 1), 0)
+            self.canvas.before.clear()
+            with self.canvas.before:
+                Color(0.5 + 0.5 * (1 - color_value), 0.5 * color_value, 0)
+                Rectangle(pos=self.pos, size=self.size)
             
 
     
