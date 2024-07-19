@@ -10,15 +10,11 @@ from kivy.config import Config
 from serial import Serial
 import threading
 
-#from comm import uart_read
-
-
 class Speedometer(Label):
     value = NumericProperty(0)
     movement = NumericProperty(-180)
     soc = NumericProperty(36)
 
-    
     def __init__(self, **kwargs):
         super(Speedometer, self).__init__(**kwargs)
 
@@ -34,21 +30,16 @@ class Speedometer(Label):
                          self.center_y + (min(self.width, self.height) / 2 - 1) * 0.8 * sin(angle)],
                  width=2)
 
-
-            #soc label
-            Label(text='SOC: ' + str(self.soc) + '%',pos=(self.center_x - 350, self.center_y +200), valign='top', font_size=20)
+            # soc label
+            Label(text='SOC: ' + str(self.soc) + '%', pos=(self.center_x - 350, self.center_y + 200), valign='top', font_size=20)
 
             # Add text indicating movement
             Label(text=str(int(self.value)), pos=(self.center_x - 10, self.center_y - 30), font_size=20)
-
-           
-
 
 class CarDashboard(FloatLayout):
     accelerator_pedal = NumericProperty(0)
     cell_temperature = NumericProperty(0)
     current_time = StringProperty("00:00")
-    uart_thread.start()
 
     def __init__(self, **kwargs):
         super(CarDashboard, self).__init__(**kwargs)
@@ -73,8 +64,8 @@ class CarDashboard(FloatLayout):
         self.add_widget(ojas_label)
 
         Clock.schedule_interval(self.update_speedometer, 0.1)
+        self.start_UART_thread()
 
-    
     def UARTRead(self):
         while True:
             with Serial('/dev/ttyACM0', 115200) as serial:
@@ -103,19 +94,11 @@ class CarDashboard(FloatLayout):
             with self.canvas.before:
                 Color(0.5 + 0.5 * (1 - color_value), 0.5 * color_value, 0)
                 Rectangle(pos=self.pos, size=self.size)
-            
-
-    
-
-        
-        
 
 class CarDashboardApp(App):
     def build(self):
         Window.fullscreen = 'auto'
         return CarDashboard()
-    
-
 
 if __name__ == '__main__':
     CarDashboardApp().run()
