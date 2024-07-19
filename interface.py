@@ -86,10 +86,9 @@ class CarDashboard(FloatLayout):
     def update_speedometer(self, soc, value):
         self.speedometer.soc = int(soc)
         self.speedometer.value = int(value)
-        if self.speedometer.value < 100:
-            self.speedometer.movement -= 1
-        else:
-            self.speedometer.movement = -180
+        min = 0
+        max = 100  
+        self.speedometer.movement = -180 + (self.speedometer.value / max_speed) * 360
         self.speedometer.draw_speedometer()
 
         color_value = max(min((1 - self.speedometer.value / 100) * 2, 1), 0)
