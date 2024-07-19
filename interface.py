@@ -7,7 +7,7 @@ from kivy.graphics import Color, Line, Rectangle
 from math import cos, sin, pi
 from kivy.core.window import Window
 from kivy.config import Config
-# from serial import Serial
+from serial import Serial
 import re
 
 #from comm import uart_read
@@ -73,18 +73,18 @@ class CarDashboard(FloatLayout):
 
         Clock.schedule_interval(self.update_speedometer, 0.1)
 
-    # def UARTRead(self):
-    #     with Serial('/dev/ttyACM0', 115200) as serial:
-    #         dataa = serial.readline()
-    #         print(dataa)
-    #         pattern = r'(\d+)\s+(\d+)'
-    #         match = re.search(pattern, dataa)
-    #         return match
+    def UARTRead(self):
+        with Serial('/dev/ttyACM0', 115200) as serial:
+            dataa = serial.readline()
+            print(dataa)
+            pattern = r'(\d+)\s+(\d+)'
+            match = re.search(pattern, dataa)
+            return match
 
 
     def update_speedometer(self, dt):
 
-        self.arrr = [3,4]
+        self.arrr = UARTRead()
         self.speedometer.soc = self.arrr[0]
         self.speedometer.value = self.arrr[1]
         if(self.speedometer.value<100):
