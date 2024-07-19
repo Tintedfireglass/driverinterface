@@ -81,9 +81,9 @@ class CarDashboard(FloatLayout):
 
     def update_data(self, soc, value):
         # Schedule UI update on the main thread
-        Clock.schedule_once(lambda dt: self.update_speedometer_data(soc, value))
+        Clock.schedule_once(lambda dt: self.update_speedometer(soc, value))
 
-    def update_speedometer_data(self, soc, value):
+    def update_speedometer(self, soc, value):
         self.speedometer.soc = int(soc)
         self.speedometer.value = int(value)
         if self.speedometer.value < 100:
