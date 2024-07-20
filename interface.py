@@ -3,18 +3,38 @@ from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import NumericProperty, StringProperty
 from kivy.clock import Clock
-from kivy.graphics import Color, Line, Rectangle
+from kivy.graphics import Color, Line, Rectangle, PushMatrix, PopMatrix, Rotate
 from kivy.uix.image import Image
 from math import cos, sin, pi
 from kivy.core.window import Window
 
-class Speedometer(Label):
+class Speedometer(FloatLayout):
     value = NumericProperty(0)
     movement = NumericProperty(-180)
     soc = NumericProperty(36)
 
     def __init__(self, **kwargs):
         super(Speedometer, self).__init__(**kwargs)
+        self.size_hint = (None, None)
+        self.size = (400, 400)
+        self.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
+
+        # Add background image
+        self.bg_image = Image(source='speedometer.png', size=self.size, pos=self.pos)
+        self.add_widget(self.bg_image)
+
+        # Add speedometer label for value display
+        self.speed_label = Label(font_size=20, pos=(self.center_x - 10, self.center_y - 30))
+        self.add_widget(self.speed_label)
+
+        self.bind(size=self.update_canvas, pos=self.update_canvas)
+
+    def update_canvas(self, *args):
+        self.canvas.before.clear()
+        with self.canvas.before:
+            Color(1, 1, 1)
+            Rectangle(texture=self.bg_image.texture, size=self.size, pos=self.pos)
+        self.draw_speedometer()
 
     def draw_speedometer(self):
         self.canvas.clear()
@@ -27,9 +47,8 @@ class Speedometer(Label):
                          self.center_x + (min(self.width, self.height) / 2 - 1) * 0.8 * cos(angle),
                          self.center_y + (min(self.width, self.height) / 2 - 1) * 0.8 * sin(angle)],
                  width=2)
-
-            # Add text indicating movement
-            Label(text=str(int(self.value)), pos=(self.center_x - 10, self.center_y - 30), font_size=20)
+            self.speed_label.text = str(int(self.value))
+            self.speed_label.pos = (self.center_x - 10, self.center_y - 30)
 
 class BatteryIndicator(FloatLayout):
     soc = NumericProperty(100)
@@ -45,22 +64,22 @@ class BatteryIndicator(FloatLayout):
     def update_battery(self):
         self.canvas.clear()
         with self.canvas:
-            # Draw battery outline
-            Color(0.5, 0.5, 0.5)  # Gray color
+            # Battery outline
+            Color(0.5, 0.5, 0.5)  
             Rectangle(pos=self.pos, size=(self.width, self.height))
 
-            # Draw battery terminal
+            # Battery terminal
             Color(0.5, 0.5, 0.5)
             terminal_height = 20
             terminal_width = 10
             terminal_pos = (self.pos[0] + (self.width - terminal_width) / 2, self.pos[1] + self.height - terminal_height + 10)
             Rectangle(pos=terminal_pos, size=(terminal_width, terminal_height))
 
-            # Draw battery body
+            # Battery body
             Color(0.2, 0.2, 0.2)  # Dark gray color
             Rectangle(pos=(self.pos[0] + 5, self.pos[1] + 10), size=(self.width - 10, self.height - 30))
 
-            # Draw SOC level
+            #  SOC level
             Color(0, 1, 0)  # Green color
             soc_height = (self.height - 30) * (self.soc / 100.0)
             Rectangle(pos=(self.pos[0] + 5, self.pos[1] + 10), size=(self.width - 10, soc_height))
@@ -80,7 +99,7 @@ class CarDashboard(FloatLayout):
     def __init__(self, **kwargs):
         super(CarDashboard, self).__init__(**kwargs)
 
-        self.speedometer = Speedometer(font_size=80, size_hint=(None, None), size=(400, 400), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        self.speedometer = Speedometer()
         self.add_widget(self.speedometer)
 
         # Battery Indicator (top-left)
@@ -95,7 +114,7 @@ class CarDashboard(FloatLayout):
         self.time_label = Label(text=self.current_time, font_size=20, size_hint=(None, None), size=(self.width / 2, 50), pos_hint={"left": 0.05, "bottom": 0.05}, halign='left', valign='middle')
         self.add_widget(self.time_label)
 
-        # Replace the OJAS text label with an image
+        # Ojas Image (bottom-right)
         self.logo_image = Image(source='logo.png', size_hint=(None, None), size=(200, 200), pos_hint={"right": 0.95, "bottom": 0.05})
         self.add_widget(self.logo_image)
 
@@ -106,13 +125,13 @@ class CarDashboard(FloatLayout):
 
     def update_speedometer(self, dt):
         # Update dummy data
-        self.dummy_soc = max(0, self.dummy_soc - 0.1)  # Decrement SOC value
-        self.dummy_value = min(100, self.dummy_value + 0.5)  # Increment speed value
+        self.dummy_soc = max(0, self.dummy_soc - 0.1)  
+        self.dummy_value = min(100, self.dummy_value + 0.5)  
 
         self.speedometer.soc = int(self.dummy_soc)
         self.speedometer.value = int(self.dummy_value)
         maxim = 360
-        self.speedometer.movement = -180 - (self.speedometer.value / maxim) * 360  # Movement from -180 to 180 degrees
+        self.speedometer.movement = -180 - (self.speedometer.value / maxim) * 360  
         self.speedometer.draw_speedometer()
 
         color_value = max(min((1 - self.speedometer.value / 100) * 2, 1), 0)
@@ -121,16 +140,14 @@ class CarDashboard(FloatLayout):
             Color(0.5 + 0.5 * (1 - color_value), 0.5 * color_value, 0)
             Rectangle(pos=self.pos, size=self.size)
 
-        # Update the battery indicator
         self.battery_indicator.soc = self.speedometer.soc
 
-        # Update the cell temperature (dummy value)
-        self.cell_temperature = 30  # Constant value for demonstration
+        self.cell_temperature = 30  
         self.cell_temperature_label.text = str(self.cell_temperature) + '°C'
 
         # Update the current time
         self.current_time = self.get_current_time()
-        self.time_label.text = self.current_time
+        self.time_label.text = '      '+ self.current_time
 
     def get_current_time(self):
         from datetime import datetime
