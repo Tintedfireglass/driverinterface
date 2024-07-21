@@ -97,12 +97,9 @@ class CarDashboard(FloatLayout):
         self.time_label = Label(text=self.current_time, font_size=20, size_hint=(None, None), size=(self.width / 2, 50), pos_hint={"left": 0.05, "bottom": 0.05}, halign='left', valign='middle')
         self.add_widget(self.time_label)
 
-        # Replace the OJAS text label with an image
+        # Ojas Logo Image (bottom-right)
         self.logo_image = Image(source='logo.png', size_hint=(None, None), size=(200, 200), pos_hint={"right": 0.95, "bottom": 0.05})
         self.add_widget(self.logo_image)
-
-        self.dummy_soc = 100  # Initial SOC value
-        self.dummy_value = 0  # Initial speed value
 
         self.serial_port = None
         self.start_UART_thread()
