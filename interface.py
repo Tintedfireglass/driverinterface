@@ -79,8 +79,13 @@ class BatteryIndicator(FloatLayout):
             Color(0.2, 0.2, 0.2)  # Dark gray color
             Rectangle(pos=(self.pos[0] + 5, self.pos[1] + 10), size=(self.width - 10, self.height - 30))
 
-            #  SOC level
-            Color(0, 1, 0)  # Green color
+            # SOC level
+            if self.soc > 50:
+                Color(0, 1, 0)  # Green color
+            elif self.soc > 20:
+                Color(1, 1, 0)  # Yellow color
+            else:
+                Color(1, 0, 0)  # Red color
             soc_height = (self.height - 30) * (self.soc / 100.0)
             Rectangle(pos=(self.pos[0] + 5, self.pos[1] + 10), size=(self.width - 10, soc_height))
 
@@ -94,7 +99,7 @@ class BatteryIndicator(FloatLayout):
 class CarDashboard(FloatLayout):
     accelerator_pedal = NumericProperty(0)
     cell_temperature = NumericProperty(0)
-    current_time = StringProperty("00:00")
+    error_message = StringProperty("")
 
     def __init__(self, **kwargs):
         super(CarDashboard, self).__init__(**kwargs)
@@ -110,9 +115,9 @@ class CarDashboard(FloatLayout):
         self.cell_temperature_label = Label(text=str(self.cell_temperature) + '°C', font_size=20, size_hint=(None, None), size=(self.width / 2, 50), pos_hint={"right": 0.95, "top": 0.95}, halign='right', valign='middle')
         self.add_widget(self.cell_temperature_label)
 
-        # Time Label (bottom-left)
-        self.time_label = Label(text=self.current_time, font_size=20, size_hint=(None, None), size=(self.width / 2, 50), pos_hint={"left": 0.05, "bottom": 0.05}, halign='left', valign='middle')
-        self.add_widget(self.time_label)
+        # Error Message Label (bottom-left)
+        self.error_message_label = Label(text=self.error_message, font_size=20, size_hint=(None, None), size=(self.width / 2, 50), pos_hint={"left": 0.05, "bottom": 0.05}, halign='left', valign='middle')
+        self.add_widget(self.error_message_label)
 
         # Ojas Image (bottom-right)
         self.logo_image = Image(source='logo.png', size_hint=(None, None), size=(200, 200), pos_hint={"right": 0.95, "bottom": 0.05})
@@ -145,14 +150,13 @@ class CarDashboard(FloatLayout):
         self.cell_temperature = 30  
         self.cell_temperature_label.text = str(self.cell_temperature) + '°C'
 
-        # Update the current time
-        self.current_time = self.get_current_time()
-        self.time_label.text = '      '+ self.current_time
+        # Update the error message
+        self.error_message = self.get_error_message()
+        self.error_message_label.text = 'Error: ' + self.error_message
 
-    def get_current_time(self):
-        from datetime import datetime
-        now = datetime.now()
-        return now.strftime("%H:%M:%S")
+    def get_error_message(self):
+        self.errrr = "E5 Pedal Error!"
+        return "       "+self.errrr
 
 class CarDashboardApp(App):
     def build(self):
