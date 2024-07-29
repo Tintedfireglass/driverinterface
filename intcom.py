@@ -164,12 +164,6 @@ class CarDashboard(FloatLayout):
         self.current_label = Label(text="Current: 0", font_size=20, color=(1, 1, 1, 1), pos_hint={"center_x": 0.6, "top": 1.325})
         self.add_widget(self.current_label)
 
-        self.dummy_soc = 100  
-        self.dummy_value = 0  
-        self.dummy_rpm = 0  
-        self.dummy_power = 0  
-        self.dummy_current = 0  
-
         self.serial_port = None
         self.start_UART_thread()
 
@@ -179,11 +173,11 @@ class CarDashboard(FloatLayout):
         try:
             with serial.Serial('/dev/ttyACM0', 115200, timeout=1) as self.serial_port:
                 while True:
-                    dataa = self.serial_port.readline().decode('utf-8').strip()
-                    if dataa:
-                        match = dataa.split()
-                        if len(match) >= 2:
-                            self.update_data(match[0], match[1])
+                    data = self.serial_port.readline().decode('utf-8').strip()
+                    if data:
+                        values = data.split(',')
+                        if len(values) >= 7:
+                            self.update_data(values)
         except serial.SerialException as e:
             print(f"Error opening or communicating over serial port: {e}")
         except Exception as e:
@@ -194,32 +188,25 @@ class CarDashboard(FloatLayout):
         uart_thread.daemon = True
         uart_thread.start()
 
-    def update_data(self, name, value):
+    def update_data(self, values):
         try:
-            value = float(value)
-            if name == "Speed":
-                self.speedometer.value = value
-                self.speedometer.movement = -180 + (value / 300 * 180)
-            elif name == "RPM":
-                self.rpm_meter.value = value
-                self.rpm_meter.movement = -180 + (value / 10000 * 180)
-            elif name == "Power":
-                self.power_bar.value = value
-                self.power_label.text = f"Power: {int(value)}"
-            elif name == "Current":
-                self.current_bar.value = value
-                self.current_label.text = f"Current: {int(value)}"
-            elif name == "SOC":
-                self.battery_indicator.soc = value
-                self.battery_soc_label.text = f"SOC: {int(value)}%"
-            elif name == "CellTemp":
-                self.cell_temperature = value
-                self.cell_temperature_label.text = f"{int(value)}°C"
-            elif name == "Error":
-                self.error_message = value
-                self.error_message_label.text = value
+            speed, rpm, power, current, soc, cell_temp, error = map(float, values[:6]) + [values[6]]
+            self.speedometer.value = speed
+            self.speedometer.movement = -180 + (speed / 300 * 180)
+            self.rpm_meter.value = rpm
+            self.rpm_meter.movement = -180 + (rpm / 10000 * 180)
+            self.power_bar.value = power
+            self.power_label.text = f"Power: {int(power)}"
+            self.current_bar.value = current
+            self.current_label.text = f"Current: {int(current)}"
+            self.battery_indicator.soc = soc
+            self.battery_soc_label.text = f"SOC: {int(soc)}%"
+            self.cell_temperature = cell_temp
+            self.cell_temperature_label.text = f"{int(cell_temp)}°C"
+            self.error_message = error
+            self.error_message_label.text = error
         except ValueError:
-            print(f"Invalid value received: {value}")
+            print(f"Invalid value received: {values}")
         except Exception as e:
             print(f"Unexpected error: {e}")
 
